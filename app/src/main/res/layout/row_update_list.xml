@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1">
+    <!-- android:padding="16dp" -->
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="Word"
+        android:layout_weight="0.43"
+        android:id="@+id/wordInUpdate"/>
+
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="Translation"
+        android:layout_weight="0.43"
+        android:id="@+id/tranInUpdate"/>
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="0.14"
+        android:background="@drawable/delete_icon"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="8dp"
+        android:id="@+id/deleteRowUpdateActivity"/>
+        <!-- android:text="delete" -->
+
+</LinearLayout>

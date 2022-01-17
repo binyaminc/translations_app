@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "992778075104",
+    "firebase_url": "https://translationsapp-b5184.firebaseio.com",
+    "project_id": "translationsapp-b5184",
+    "storage_bucket": "translationsapp-b5184.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992778075104:android:3da4564b5b0cad862dc985",
+        "android_client_info": {
+          "package_name": "com.example.translations_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "992778075104-qsveh8n864kr8bm4b34faulhahiampsu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.translations_app",
+            "certificate_hash": "a7e92983f1d248f6a9d03a7fd9952afd854eeead"
+          }
+        },
+        {
+          "client_id": "992778075104-mas0q7f75m28ipj0ha06j9m3lj7timk4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF0UGb2yqw-GvNrFG6tSfciV2WTfEfiOA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992778075104-mas0q7f75m28ipj0ha06j9m3lj7timk4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
