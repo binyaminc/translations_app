@@ -42,12 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private String userType;
 
     private ListView listView;
-    private ArrayList<String> arrayListOfLists;
-    private HashMap<String, String> mapOfListAndKey;
+    private ArrayList<String> arrayListOfListNames;
+    private HashMap<String, String> mapOfListNameAndKey;
     private ArrayList<Pair> list;
     private ArrayAdapter<String> adapter;
     private String actionType;
     private String listLink;
+    private Integer listIndex;
 
     public static String listChoice;
 
@@ -80,13 +81,14 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                listChoice = arrayListOfLists.get(position);
+                listChoice = arrayListOfListNames.get(position);
                 switch(actionType) {
                     case "practice_list":
                         sendUserToPracticeActivity(listChoice);
                         break;
                     case "delete_list":
                         //ask the user if he sure he wants to delete the list, and if do - delete
+                        listIndex = position;
                         doesWantToDelete();
                         break;
                     case "update_list":
@@ -120,10 +122,10 @@ public class MainActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.myListView);
 
-        arrayListOfLists = new ArrayList<String>();
+        arrayListOfListNames = new ArrayList<String>();
         list = new ArrayList<Pair>();
-        mapOfListAndKey = new HashMap<>();
-        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, arrayListOfLists);
+        mapOfListNameAndKey = new HashMap<>();
+        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, arrayListOfListNames);
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -145,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
                 while(it.hasNext()){
                     DataSnapshot dataSnapshotChild = it.next();
-                    arrayListOfLists.add(dataSnapshotChild.getValue().toString());
-                    mapOfListAndKey.put(dataSnapshotChild.getValue().toString(), dataSnapshotChild.getKey());//value-home, key-23h94f3jdslnge
+                    arrayListOfListNames.add(dataSnapshotChild.getValue().toString());
+                    mapOfListNameAndKey.put(dataSnapshotChild.getValue().toString(), dataSnapshotChild.getKey());//value-home, key-23h94f3jdslnge
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -162,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void shareList(String choice) {
-        String listUId = mapOfListAndKey.get(choice);
+        String listUId = mapOfListNameAndKey.get(choice);
         //copy list link
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("list link", listUId);
@@ -204,12 +206,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void deleteList(String choice) {
 
-        arrayListOfLists.remove(choice);
+        arrayListOfListNames.remove(choice);
+
         adapter.clear();
         adapter.notifyDataSetChanged();
 
         //remove from the private database
-        String listUId = mapOfListAndKey.get(choice);
+        String listUId = mapOfListNameAndKey.get(choice);
         DatabaseReference myListRef = myListsRef.child(listUId).getRef();
         myListRef.removeValue();
 
@@ -249,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mapOfListAndKey.remove(choice);
+        mapOfListNameAndKey.remove(choice);
     }
 
     private void getTeachersList() {
@@ -332,9 +335,9 @@ public class MainActivity extends AppCompatActivity {
                             DataSnapshot dataSnapshotChild = it.next();
                             String[] details = dataSnapshotChild.getKey().split("__");
                             String listName = details[0];
-                            mapOfListAndKey.put(listLink, listName);
+                            mapOfListNameAndKey.put(listLink, listName);
 
-                            arrayListOfLists.add(listName);
+                            arrayListOfListNames.add(listName);
                             adapter.clear();
                             adapter.notifyDataSetChanged();
 
@@ -348,13 +351,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    //Toast.makeText(getApplicationContext(), "didn't succeed reading list name from database", Toast.LENGTH_SHORT).show();
-                    int x = 0;
                 }
             });
         }
         else
-            Toast.makeText(getApplicationContext(), "the link must have a content...", 0).show();
+            Toast.makeText(getApplicationContext(), "the link must have a content...", Toast.LENGTH_SHORT).show();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -372,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.create_new_list:
                 actionType = "practice_list";
@@ -416,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendUserToUpdateListActivity(String choice) {
         list = new ArrayList<Pair>();
-        String listUId = mapOfListAndKey.get(choice);
+        String listUId = mapOfListNameAndKey.get(choice);
         final DatabaseReference listRef = database.getReference().child("lists").child(listUId).getRef();
 
         listRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -466,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
     private void sendUserToPracticeActivity(String choice) {
 
         list = new ArrayList<Pair>();
-        String listUId = mapOfListAndKey.get(choice);
+        String listUId = mapOfListNameAndKey.get(choice);
         DatabaseReference listRef = database.getReference().child("lists").child(listUId).getRef();
         listRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

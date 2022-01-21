@@ -3,25 +3,24 @@ package com.example.translations_app;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
 
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class mySQLiteDatabase extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabalseHelper";
     private static final String COL1 = "gmail";
     private static final String COL2 = "password";
 
-    public DatabaseHelper(Context context) {
+    public mySQLiteDatabase(Context context) {
         super(context, "Login.db", null, 1);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+    public void onCreate(android.database.sqlite.SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("Create table " +
             "last_user(" +
             "user_id integer primary key)");
@@ -35,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(android.database.sqlite.SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("drop table if exists last_user");
         sqLiteDatabase.execSQL("drop table if exists users");
         onCreate(sqLiteDatabase); //needed? from previous clip
@@ -45,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         int user_id = getIdOfUser(email);
 
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        android.database.sqlite.SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("user_id", user_id);
 
@@ -60,14 +59,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getIdOfUser(String email) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        android.database.sqlite.SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from users where email =?", new String[]{email});
         cursor.moveToFirst();
         return cursor.getInt(0);
     }
 
     public boolean addUser(String email, String password, String userType) {
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        android.database.sqlite.SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValuesUser = new ContentValues();
         contentValuesUser.put("email", email);
         contentValuesUser.put("password", password);
@@ -100,7 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
     public int getLastUserIfExist() {
-        SQLiteDatabase db = this.getReadableDatabase();
+        android.database.sqlite.SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query("last_user", null, null, null, null, null, null, null);
         if(cursor == null)//there is mo content- no user registrated
             return -1;
@@ -117,7 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public User getUserIfExist(int lastUserId) {
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        android.database.sqlite.SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query("users", null, null, null, null, null, null, null);
         if(cursor == null)//there is mo content- no user registrated
             return null;
@@ -139,7 +138,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<String> getListOfLists(User user) {
         String tableName = "tableListsOf" + user.getId();
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        android.database.sqlite.SQLiteDatabase db = this.getWritableDatabase();
 
 
 

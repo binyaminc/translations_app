@@ -26,7 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
 
     /*
-    DatabaseHelper mDatabaseHelper;
+    mySQLiteDatabase mMySQLiteDatabase;
 
     private RadioGroup radioGroup;
     private RadioButton radioButton;
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         loadingBar = new ProgressDialog(this);
 
-        mDatabaseHelper = new DatabaseHelper(this);
+        mMySQLiteDatabase = new mySQLiteDatabase(this);
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
 
         ifRegistered();
@@ -164,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
          */
             /*
             final String currentUserUId = currentUser.getUid();
-            DatabaseReference Ref = FirebaseDatabase.getInstance().getReference().child("students");
+            DatabaseReference Ref = myFirebaseDatabase.getInstance().getReference().child("students");
             Ref.addListenerForSingleValueEvent(new ValueEventListener() {
                                                    @Override
                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -224,7 +224,7 @@ public class LoginActivity extends AppCompatActivity {
     private void ifRegistered() {
 
         //checks if registered- in SQLite there is a registered user
-        int lastUser = mDatabaseHelper.getLastUserIfExist();
+        int lastUser = mMySQLiteDatabase.getLastUserIfExist();
         if(lastUser == -1) {//there is no user registered
             //Toast.makeText(getApplicationContext(), "last user not found", Toast.LENGTH_SHORT).show();
             return;
@@ -233,7 +233,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), ("last user found: " + lastUser), Toast.LENGTH_SHORT).show();
         }
 
-        User user = mDatabaseHelper.getUserIfExist(lastUser);
+        User user = mMySQLiteDatabase.getUserIfExist(lastUser);
         if(user == null) {//there is no user registered
             Toast.makeText(getApplicationContext(), "user not found", Toast.LENGTH_SHORT).show();
             return;
@@ -253,7 +253,7 @@ public class LoginActivity extends AppCompatActivity {
         //checks if the email+password is registered in firebase authentication
         //if does, load the data and insert the user with sqlite
         //if not, create new user in auth, new database for this user, and insert to sqlite
-        Boolean insertUser = mDatabaseHelper.addUser(email, password, userType);
+        Boolean insertUser = mMySQLiteDatabase.addUser(email, password, userType);
         if (insertUser) {
 
             loadingBar.setTitle("Creating Bew Account");
@@ -282,11 +282,11 @@ public class LoginActivity extends AppCompatActivity {
 
              Toast.makeText(getApplicationContext(), "Registered successfully", Toast.LENGTH_LONG).show();
              Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-             int id = mDatabaseHelper.getIdOfUser(email);
+             int id = mMySQLiteDatabase.getIdOfUser(email);
              mainIntent.putExtra("id", id);
              startActivity(mainIntent);
         }
-        Boolean insertUserId = mDatabaseHelper.setLastUserId(email);
+        Boolean insertUserId = mMySQLiteDatabase.setLastUserId(email);
         if (insertUserId) {
             Toast.makeText(getApplicationContext(), "enter id successfully", Toast.LENGTH_LONG).show();
         }
