@@ -1,7 +1,5 @@
 package com.example.translations_app;
 
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,7 +16,7 @@ import java.util.Iterator;
 
 
 public class myFirebaseDatabase implements IDatabase{
-    private static final myFirebaseDatabase ourInstance = new myFirebaseDatabase();
+    private static final myFirebaseDatabase ourInstance = new myFirebaseDatabase("");//TODO: check how to do it right - I don't know yet the type
 
     private FirebaseDatabase database;
     private DatabaseReference userRef;
@@ -163,14 +161,14 @@ public class myFirebaseDatabase implements IDatabase{
                         list.name = listName;
 
                         arrayListOfListNames.add(listName);
-                        adapter.clear();
-                        adapter.notifyDataSetChanged();
+                        //adapter.clear();
+                        //adapter.notifyDataSetChanged();
 
                         myListsRef.child(listLink).setValue(listName);
                     }
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), "invalid list link or the owner deleted the list", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "invalid list link or the owner deleted the list", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -178,6 +176,7 @@ public class myFirebaseDatabase implements IDatabase{
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+        return list;//TODO: check how to make sure it has the right values. maybe not to return, just to update arrayListOfNames and notify?
     }
 }
 
