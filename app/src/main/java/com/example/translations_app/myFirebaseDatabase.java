@@ -11,12 +11,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 
 public class myFirebaseDatabase implements IDatabase{
-    private static final myFirebaseDatabase ourInstance = new myFirebaseDatabase("");//TODO: check how to do it right - I don't know yet the type
+    private static myFirebaseDatabase ourInstance = null;//TODO: check how to do it right - I don't know yet the type
 
     private FirebaseDatabase database;
     private DatabaseReference userRef;
@@ -24,49 +23,72 @@ public class myFirebaseDatabase implements IDatabase{
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     public static String databaseURL = "https://translationsapp-b5184.firebaseio.com/";
-    private String userType;
+
+    private String generalType;
 
     private String listLink;
-    myList list;
+    private myList list;
     private ArrayList<String> arrayListOfListNames;
-    private HashMap<String, String> mapOfListNameAndKey;
-    private ArrayList<myList> lists;
+    private ArrayList<String> arrayListOfKeys;
+    private ArrayList<myList> arrayListOfLists;
 
     public static myFirebaseDatabase getInstance() {
+        if (ourInstance == null)
+            ourInstance = new myFirebaseDatabase();
         return ourInstance;
     }
 
-    private myFirebaseDatabase(String generalType) {
+    private myFirebaseDatabase(){//String generalType) {
 
         arrayListOfListNames = new ArrayList<>();
-        mapOfListNameAndKey = new HashMap<>();
-        lists = new ArrayList<>();
+        arrayListOfKeys = new ArrayList<>();
+        arrayListOfLists = new ArrayList<>();
 
 
         database = FirebaseDatabase.getInstance(databaseURL);
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        userRef = database.getReference().child(generalType).child(currentUser.getUid());
-        myListsRef = userRef.child("myLists").getRef();
 
-        myListsRef.addValueEventListener(new ValueEventListener() {
+        //check if the user is a teacher or a student
+        final String currentUserUId = currentUser.getUid();
+        DatabaseReference teacherRef = database.getReference().child("teachers").child(currentUserUId).getRef();
+        teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
-                while(it.hasNext()){
-                    DataSnapshot dataSnapshotChild = it.next();
-                    String listName = dataSnapshotChild.getValue().toString();
-                    String listUID = dataSnapshotChild.getKey();
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists())
+                    generalType = "teachers";
+                else
+                    generalType = "students";
 
-                    arrayListOfListNames.add(listName);
-                    mapOfListNameAndKey.put(listName, listUID);//value-home, key-23h94f3jdslnge
-                    lists.add(new myList(listName, listUID));
-                }
+                //after I know the user type, I can have a reference to it
+                userRef = database.getReference().child(generalType).child(currentUser.getUid());
+                myListsRef = userRef.child("myLists").getRef();
+
+                myListsRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                        while(it.hasNext()){
+                            DataSnapshot dataSnapshotChild = it.next();
+                            String listName = dataSnapshotChild.getValue().toString();
+                            String listUID = dataSnapshotChild.getKey();
+
+                            arrayListOfListNames.add(listName);
+                            arrayListOfKeys.add(listUID);
+                            arrayListOfLists.add(new myList(listName, listUID));
+                        }
+                        for(Runnable r : listNamesListeners) {r.run();}//update all who wanted to know about changings in arrayListOfListNames
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+
+
     }
 
     @Override
@@ -75,13 +97,12 @@ public class myFirebaseDatabase implements IDatabase{
     }
 
     @Override
-    public void deleteList(String choice) {
-        arrayListOfListNames.remove(choice);
-        //adapter.clear();
-        //adapter.notifyDataSetChanged();
+    public void deleteList(int index) {
+        arrayListOfListNames.remove(index);
+        for(Runnable r : listNamesListeners) {r.run();}
 
         //remove from the private database
-        String listUId = mapOfListNameAndKey.get(choice);
+        String listUId = arrayListOfKeys.get(index);
         DatabaseReference myListRef = myListsRef.child(listUId).getRef();
         myListRef.removeValue();
 
@@ -89,7 +110,7 @@ public class myFirebaseDatabase implements IDatabase{
         myListsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists())//there are no more lists in the private lists
+                if (!dataSnapshot.exists())//there are no more arrayListOfLists in the private arrayListOfLists
                     myListsRef.setValue("");
             }
 
@@ -101,7 +122,7 @@ public class myFirebaseDatabase implements IDatabase{
 
 
         //remove from the public database, if one is the owner of the list
-        final DatabaseReference listRef = database.getReference().child("lists").child(listUId).getRef();
+        final DatabaseReference listRef = database.getReference().child("arrayListOfLists").child(listUId).getRef();
         listRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -121,7 +142,7 @@ public class myFirebaseDatabase implements IDatabase{
             }
         });
 
-        mapOfListNameAndKey.remove(choice);
+        arrayListOfKeys.remove(index);
     }
 
     @Override
@@ -131,23 +152,23 @@ public class myFirebaseDatabase implements IDatabase{
 
     @Override
     public ArrayList<String> getNamesOfLists() {
-        return null;
+        return arrayListOfListNames;
     }
 
     @Override
-    public Object getListRepresentation(String list) {
-        return null;
+    public Object getListRepresentation(int index) {
+        return arrayListOfKeys.get(index);
     }
 
     @Override
-    public myList getTeachersList(Object listRep) {
+    public void getTeachersList(Object listRep) {
 
-        listLink = (String) listRep;
+        listLink = (String) listRep; // in this database, the list representation is UID
 
         list = new myList();
         list.UID = listLink;
 
-        DatabaseReference listRef = database.getReference().child("lists").child(listLink).getRef();
+        DatabaseReference listRef = database.getReference().child("arrayListOfLists").child(listLink).getRef();
         listRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -157,12 +178,21 @@ public class myFirebaseDatabase implements IDatabase{
                         DataSnapshot dataSnapshotChild = it.next();
                         String[] details = dataSnapshotChild.getKey().split("__");
                         String listName = details[0];
-                        mapOfListNameAndKey.put(listLink, listName);
                         list.name = listName;
 
+                        arrayListOfKeys.add(listLink);
                         arrayListOfListNames.add(listName);
-                        //adapter.clear();
-                        //adapter.notifyDataSetChanged();
+                        for(Runnable r : listNamesListeners) {r.run();}
+
+                        //add values to list
+                        for (Iterator<DataSnapshot> iter = dataSnapshotChild.getChildren().iterator(); iter.hasNext(); ) {
+                            DataSnapshot pair = iter.next();
+                            String word = pair.child("word").getValue().toString();
+                            String translation = pair.child("translation").getValue().toString();
+                            String comment = pair.child("comment").getValue().toString();
+                            list.values.add(new Pair(word, translation, comment));
+                        }
+                        arrayListOfLists.add(list);
 
                         myListsRef.child(listLink).setValue(listName);
                     }
@@ -176,7 +206,6 @@ public class myFirebaseDatabase implements IDatabase{
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        return list;//TODO: check how to make sure it has the right values. maybe not to return, just to update arrayListOfNames and notify?
     }
 }
 

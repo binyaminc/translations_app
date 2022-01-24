@@ -33,6 +33,7 @@ import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
+    private IDatabase db;
     private FirebaseDatabase database;
     private DatabaseReference userRef;
     private DatabaseReference myListsRef;
@@ -123,6 +124,9 @@ public class MainActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.myListView);
 
+        db = DatabaseFactory.getDatabase();
+
+
         arrayListOfListNames = new ArrayList<String>();
         list = new ArrayList<Pair>();
         arrayListOfKeys = new ArrayList<>();
@@ -130,6 +134,13 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
+        db.listNamesListeners.add(new Runnable() {
+            @Override
+            public void run() {
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         userType = (String) getIntent().getExtras().get("userType");
         String generalType = (userType.equals("teacher") ? "teachers" : "students");
@@ -326,6 +337,10 @@ public class MainActivity extends AppCompatActivity {
         //if there is a link- we should update it in the lists
         if(!listLink.isEmpty()) {
 
+            if(arrayListOfKeys.contains(listLink)) {
+                Toast.makeText(getApplicationContext(), "you already have this list", Toast.LENGTH_LONG).show();
+                return;
+            }
             DatabaseReference listRef = database.getReference().child("lists").child(listLink).getRef();
             listRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -487,7 +502,6 @@ public class MainActivity extends AppCompatActivity {
                             String word = dataSnapshotGrandChild.child("word").getValue().toString();
                             String tran = dataSnapshotGrandChild.child("tran").getValue().toString();
                             list.add(new Pair(word, tran, comment));
-
                         }
                     }
                     Intent practiceIntent = new Intent(getApplicationContext(), PracticeActivity.class);

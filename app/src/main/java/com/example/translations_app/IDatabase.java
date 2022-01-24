@@ -9,15 +9,17 @@ public interface IDatabase {
     // files that declares whether the user was authenticated
     boolean databaseWasAuthed = false;
 
+    ArrayList<Runnable> listNamesListeners = new ArrayList<>();
+
     String addList (String listName, ArrayList<Pair> values); // returns list identifier
-    void deleteList (String list);
+    void deleteList (int index);
     void updateList (String list, ArrayList<Pair> newValues);
 
     ArrayList<String> getNamesOfLists ();
 
-    Object getListRepresentation (String list); //returns UID or file with the list
+    Object getListRepresentation (int index); //returns UID or file with the list
     //TODO: this should return the name and the listIdentifier too
-    myList getTeachersList (Object listRep); //returns the list using the UID or converts the object
+    void getTeachersList (Object listRep); //returns the list using the UID or converts the object
 }
 
 /*
