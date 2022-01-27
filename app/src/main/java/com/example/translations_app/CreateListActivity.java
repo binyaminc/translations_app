@@ -24,6 +24,7 @@ public class CreateListActivity extends AppCompatActivity {
     ArrayList<Pair> list;
     String userType;
 
+    private IDatabase db = DatabaseFactory.getDatabase();
     private FirebaseDatabase database;
     private DatabaseReference userRef;
     private DatabaseReference myListsRef;
@@ -66,11 +67,13 @@ public class CreateListActivity extends AppCompatActivity {
                     //enter to firebase
                     String setName = setNameEditText.getText().toString();
 
+                    db.addList(setName, list);
+                    /*
                     //put the list key-name in the user data
                     String listUId = myListsRef.push().getKey();
                     myListsRef.child(listUId).setValue(setName);
 
-                    //put the list UId-name + owner + values in the public lists
+                    //put the pairsList UId-name + owner + values in the public lists
                     String saveableEmail = currentUser.getEmail().replace('@', '_');
                     saveableEmail = saveableEmail.replace(".", "_");
                     String name_Owner = setName + "__" + saveableEmail;
@@ -78,7 +81,7 @@ public class CreateListActivity extends AppCompatActivity {
                     for (Pair pair : list) {
                         listRef.push().setValue(pair);
                     }
-
+                    */
                     sendUserToMainActivity();
                 }
                 else

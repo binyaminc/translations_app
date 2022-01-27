@@ -11,15 +11,19 @@ public interface IDatabase {
 
     ArrayList<Runnable> listNamesListeners = new ArrayList<>();
 
-    String addList (String listName, ArrayList<Pair> values); // returns list identifier
+    ArrayList<String> arrayListOfListNames = new ArrayList<>();
+    ArrayList<String> arrayListOfKeys = new ArrayList<>();
+    ArrayList<myList> arrayListOfLists = new ArrayList<>();
+
+    void addList (String listName, ArrayList<Pair> values);
     void deleteList (int index);
-    void updateList (String list, ArrayList<Pair> newValues);
+    void updateList (int index, ArrayList<Pair> newValues);
 
     ArrayList<String> getNamesOfLists ();
 
-    Object getListRepresentation (int index); //returns UID or file with the list
-    //TODO: this should return the name and the listIdentifier too
-    void getTeachersList (Object listRep); //returns the list using the UID or converts the object
+    Object getListRepresentation (int index); //returns UID or file with the pairsList
+
+    void getTeachersList (Object listRep); //returns the pairsList using the UID or converts the object
 }
 
 /*
@@ -27,7 +31,7 @@ functionality of IDatabase:
 
 getNamesOfLists
 getNamesAndUIDs (?)
-getListRepresentation (UID / file with the list)
+getListRepresentation (UID / file with the pairsList)
 deleteList
 getTeachersList (using UID / file)
 getListByUID

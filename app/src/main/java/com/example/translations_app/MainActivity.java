@@ -21,14 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,10 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private String userType;
 
     private ListView listView;
-    private ArrayList<String> arrayListOfListNames;
-    private ArrayList<String> arrayListOfKeys;
-    private ArrayList<Pair> list;
     private ArrayAdapter<String> adapter;
+    //private ArrayList<String> arrayListOfListNames;
+    //private ArrayList<String> arrayListOfKeys;
+    private ArrayList<Pair> list;
     private String actionType;
     private String listLink;
     private Integer listIndex;
@@ -82,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                listChoice = arrayListOfListNames.get(position);
+                listChoice = db.arrayListOfListNames.get(position);
                 listIndex = position;
 
                 switch(actionType) {
@@ -90,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         sendUserToPracticeActivity(listIndex);
                         break;
                     case "delete_list":
-                        //ask the user if he sure he wants to delete the list, and if do - delete
+                        //ask the user if he sure he wants to delete the pairsList, and if do - delete
                         doesWantToDelete();
                         break;
                     case "update_list":
@@ -115,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     //TODO: use hebrew
     //TODO: create an opportunity to translate words using google translate or morfix
     //TODO: in a translation, maybe to suggest him the automatic translation of G"T or morfix
-    //TODO: list of lists to learn, he chooses one and presses on a button- either delete, or practice or update(add or delete one pair)
+    //TODO: pairsList of lists to learn, he chooses one and presses on a button- either delete, or practice or update(add or delete one pair)
     }
 
     private void initializeFields() {
@@ -127,17 +123,19 @@ public class MainActivity extends AppCompatActivity {
         db = DatabaseFactory.getDatabase();
 
 
-        arrayListOfListNames = new ArrayList<String>();
+        //arrayListOfListNames = new ArrayList<String>();
         list = new ArrayList<Pair>();
-        arrayListOfKeys = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, arrayListOfListNames);
+        //arrayListOfKeys = new ArrayList<>();
+        adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, new ArrayList<>(db.arrayListOfListNames)); //making copy of list, because otherwise clear() will change values of the original arrayList
         listView.setAdapter(adapter);
+
         adapter.notifyDataSetChanged();
 
         db.listNamesListeners.add(new Runnable() {
             @Override
             public void run() {
                 adapter.clear();
+                adapter.addAll(db.arrayListOfListNames);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -151,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         //userRef = database.getReference(currentUser.getUid());
         userRef = database.getReference().child(generalType).child(currentUser.getUid());
         myListsRef = userRef.child("myLists").getRef();
-
+        /*
         myListsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -170,13 +168,13 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(),"didn't succeed reading lists",Toast.LENGTH_SHORT).show();
             }
         });
-
+        */
 
 
     }
 
     private void shareList(int index) {
-        String listUId = arrayListOfKeys.get(index);
+        String listUId = (String) db.getListRepresentation(index); //in this version, it has to return a string because it copies it. in other verstions maybe to change implementation
         //copy list link
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("list link", listUId);
@@ -185,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         //dialog with "copied message!"
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         //alertDialog.setTitle("link was copied");
-        alertDialog.setMessage("the link to the list " + arrayListOfListNames.get(index) + " was copied.");
+        alertDialog.setMessage("the link to the list \"" + db.arrayListOfListNames.get(index) + "\" was copied.");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -210,12 +208,12 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                deleteList(listIndex);
+                db.deleteList(listIndex);
             }
         });
         alertDialog.show();
     }
-
+/*
     private void deleteList(int index) {
 
         arrayListOfListNames.remove(index);
@@ -266,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
         arrayListOfKeys.remove(index);
     }
+    */
 
     private void getTeachersList() {
         //open dialog with place to enter the link from the teacher
@@ -281,7 +280,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 listLink = input.getText().toString();
-                updateListAfterLink();
+                //updateListAfterLink();
+                db.getTeachersList(listLink);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -332,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
         */
     }
 
+    /*
     private void updateListAfterLink() {
 
         //if there is a link- we should update it in the lists
@@ -373,6 +374,8 @@ public class MainActivity extends AppCompatActivity {
         else
             Toast.makeText(getApplicationContext(), "the link must have a content...", Toast.LENGTH_SHORT).show();
     }
+    */
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if(userType.equals("teacher")) {
@@ -433,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendUserToUpdateListActivity(int index) {
+        /*
         list = new ArrayList<Pair>();
         String listUId = arrayListOfKeys.get(index);
         final DatabaseReference listRef = database.getReference().child("lists").child(listUId).getRef();
@@ -478,11 +482,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        */
+        if (db.arrayListOfLists.get(index).isOwner) {
+            //send to updateActivity
+            Intent updateActivity = new Intent(getApplicationContext(), UpdateListActivity.class);
+            updateActivity.putExtra("list", db.arrayListOfLists.get(index));
+            updateActivity.putExtra("index", index);
+            startActivity(updateActivity);
+        }
+        else
+            Toast.makeText(getApplicationContext(), "Only the list owner can update the list", Toast.LENGTH_LONG).show();
     }
 
     private void sendUserToPracticeActivity(int index) {
-
+        /*
         list = new ArrayList<Pair>();
         String listUId = arrayListOfKeys.get(index);
         DatabaseReference listRef = database.getReference().child("lists").child(listUId).getRef();
@@ -518,7 +531,10 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
+        */
+        Intent practiceIntent = new Intent(getApplicationContext(), PracticeActivity.class);
+        practiceIntent.putExtra("key", db.arrayListOfLists.get(index).values);
+        startActivity(practiceIntent);
     }
 
 

@@ -77,12 +77,12 @@ public class PracticeActivity extends AppCompatActivity {
                             }
 
                             public void onFinish() {
-                                if (list.size() > 1) {
+                                if (pairsList.size() > 1) {
                                     int prevIndex = index;
                                     while (prevIndex == index)
-                                        index = generate(0, list.size() - 1);
+                                        index = generate(0, pairsList.size() - 1);
                                 }
-                                pair = (Pair) list.toArray()[index];
+                                pair = (Pair) pairsList.toArray()[index];
                                 text = pair.getWord();
                                 disTextTextView.setText(text);
                                 disTranEditText.setText("");
@@ -142,7 +142,7 @@ public class PracticeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 swapFlag = true;
-                //swap the pairs in the list
+                //swap the pairs in the pairsList
                 ArrayList<Pair> tempList = new ArrayList<Pair>();
                 String temp;
                 for(int i = 0; i < list.size(); i++){

@@ -26,6 +26,9 @@ public class UpdateListActivity extends AppCompatActivity {
     ListView listView;
     Button addButton;
 
+    IDatabase db = DatabaseFactory.getDatabase();
+    int listIndex;
+    myList fullList;
     FirebaseDatabase database;
     DatabaseReference listRef;
     String name_owner;
@@ -33,7 +36,7 @@ public class UpdateListActivity extends AppCompatActivity {
     MyAdapter adapter;
     ArrayList<String> words = new ArrayList<String>();
     ArrayList<String> trans = new ArrayList<String>();
-    ArrayList<Pair> list = new ArrayList<Pair>();
+    ArrayList<Pair> pairsList = new ArrayList<Pair>();
     Boolean hasChange;
     Boolean alertDialogPressed;
 
@@ -75,17 +78,17 @@ public class UpdateListActivity extends AppCompatActivity {
         addButton = findViewById(R.id.addItemButtonUpdateActivity);
 
         database = FirebaseDatabase.getInstance();
-        String listUID = (String) getIntent().getExtras().get("listUID");
+        listIndex = (int) getIntent().getExtras().get("index");
+        fullList = (myList) getIntent().getExtras().get("list");
+        String listUID = fullList.UID;
         listRef = database.getReference().child("lists").child(listUID).getRef();
-        name_owner = (String) getIntent().getExtras().get("name_email");
+        //name_owner = (String) getIntent().getExtras().get("name_email");
 
 
-        list = (ArrayList<Pair>) getIntent().getExtras().get("key");
-        for (int i = 0; i<list.size(); i++) {
-            //words[i] = list.get(i).getWord();
-            //trans[i] = list.get(i).getTran();
-            words.add(list.get(i).getWord());
-            trans.add(list.get(i).getTran());
+        pairsList = fullList.values;
+        for (int i = 0; i< pairsList.size(); i++) {
+            words.add(pairsList.get(i).getWord());
+            trans.add(pairsList.get(i).getTran());
 
         }
         hasChange = false;
@@ -118,7 +121,7 @@ public class UpdateListActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ArrayList<Pair> updatedList = new ArrayList<>();
-                //creating the updated list
+                //creating the updated pairsList
                 for (int i = 0; i<adapter.getArraySize(); i++) {
                     updatedList.add(adapter.getPair(i));
                 }
@@ -140,19 +143,21 @@ public class UpdateListActivity extends AppCompatActivity {
 
         */
 
-        //creating the updated list
+        //creating the updated pairsList
         ArrayList<Pair> updatedList = new ArrayList<>();
         for (int i = 0; i<adapter.getArraySize(); i++) {
             updatedList.add(adapter.getPair(i));
         }
+        db.updateList(listIndex, updatedList);
+
         // save to firebase
-        saveListOnFirebase(updatedList);
+        //saveListOnFirebase(updatedList);
 
         super.onPause();
     }
 
     public void saveListOnFirebase(ArrayList<Pair> updatedList){
-        //clear the whole list
+        //clear the whole pairsList
         (listRef.child(name_owner).getRef()).removeValue();
 
         //add each pair
