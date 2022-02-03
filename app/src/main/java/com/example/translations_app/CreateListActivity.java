@@ -9,6 +9,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 public class CreateListActivity extends AppCompatActivity {
@@ -20,6 +25,12 @@ public class CreateListActivity extends AppCompatActivity {
     String userType;
 
     private IDatabase db = DatabaseFactory.getDatabase();
+    private FirebaseDatabase database;
+    private DatabaseReference userRef;
+    private DatabaseReference myListsRef;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +68,20 @@ public class CreateListActivity extends AppCompatActivity {
                     String setName = setNameEditText.getText().toString();
 
                     db.addList(setName, list);
+                    /*
+                    //put the list key-name in the user data
+                    String listUId = myListsRef.push().getKey();
+                    myListsRef.child(listUId).setValue(setName);
 
+                    //put the pairsList UId-name + owner + values in the public lists
+                    String saveableEmail = currentUser.getEmail().replace('@', '_');
+                    saveableEmail = saveableEmail.replace(".", "_");
+                    String name_Owner = setName + "__" + saveableEmail;
+                    DatabaseReference listRef = database.getReference().child("lists").child(listUId).child(name_Owner).getRef();
+                    for (Pair pair : list) {
+                        listRef.push().setValue(pair);
+                    }
+                    */
                     sendUserToMainActivity();
                 }
                 else
@@ -79,6 +103,12 @@ public class CreateListActivity extends AppCompatActivity {
         list = new ArrayList<Pair>();
         userType = getIntent().getExtras().get("userType").toString();
 
+        database = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        String generalType = (userType.equals("teacher") ? "teachers" : "students");
+        userRef = database.getReference().child(generalType).child(currentUser.getUid());
+        myListsRef = userRef.child("myLists").getRef();
     }
 
     private void sendUserToMainActivity() {

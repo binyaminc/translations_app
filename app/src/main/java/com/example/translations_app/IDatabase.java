@@ -4,13 +4,10 @@ import java.util.ArrayList;
 
 public interface IDatabase {
 
-    // function that declares whether the database requires any type of user authentication
-    boolean databaseNeedsUserAuth();
-    // function that declares whether the user was authenticated
-    boolean databaseWasAuthed();
-
-    void authenticate();
-    void signOut();
+    // field that declares whether the database requires any type of user authentication
+    boolean databaseNeedsUserAuth = true;
+    // files that declares whether the user was authenticated
+    boolean databaseWasAuthed = false;
 
     ArrayList<Runnable> listNamesListeners = new ArrayList<>();
 
@@ -28,3 +25,17 @@ public interface IDatabase {
 
     void getTeachersList (Object listRep); //returns the pairsList using the UID or converts the object
 }
+
+/*
+functionality of IDatabase:
+
+getNamesOfLists
+getNamesAndUIDs (?)
+getListRepresentation (UID / file with the pairsList)
+deleteList
+getTeachersList (using UID / file)
+getListByUID
+addList
+updateList (delete + add)
+
+ */
