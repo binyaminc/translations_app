@@ -67,28 +67,7 @@ public class PracticeActivity extends AppCompatActivity {
                     if(discoverFlag && !swapFlag){
                         //do nothing, wait until the user press on the okButton
 
-                        /*
-                        discoverFlag = false;
-                        //wait 1.5 seconds, then resume action
-                        new CountDownTimer(2000, 100) {
 
-                            public void onTick(long millisUntilFinished) {
-
-                            }
-
-                            public void onFinish() {
-                                if (pairsList.size() > 1) {
-                                    int prevIndex = index;
-                                    while (prevIndex == index)
-                                        index = generate(0, pairsList.size() - 1);
-                                }
-                                pair = (Pair) pairsList.toArray()[index];
-                                text = pair.getWord();
-                                disTextTextView.setText(text);
-                                disTranEditText.setText("");
-                            }
-                        }.start();
-`                       */
                     }
                     else if(swapFlag){
                         discoverFlag = false;

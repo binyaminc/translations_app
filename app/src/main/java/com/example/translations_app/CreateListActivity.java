@@ -68,20 +68,7 @@ public class CreateListActivity extends AppCompatActivity {
                     String setName = setNameEditText.getText().toString();
 
                     db.addList(setName, list);
-                    /*
-                    //put the list key-name in the user data
-                    String listUId = myListsRef.push().getKey();
-                    myListsRef.child(listUId).setValue(setName);
 
-                    //put the pairsList UId-name + owner + values in the public lists
-                    String saveableEmail = currentUser.getEmail().replace('@', '_');
-                    saveableEmail = saveableEmail.replace(".", "_");
-                    String name_Owner = setName + "__" + saveableEmail;
-                    DatabaseReference listRef = database.getReference().child("lists").child(listUId).child(name_Owner).getRef();
-                    for (Pair pair : list) {
-                        listRef.push().setValue(pair);
-                    }
-                    */
                     sendUserToMainActivity();
                 }
                 else

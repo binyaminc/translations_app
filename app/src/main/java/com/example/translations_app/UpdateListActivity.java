@@ -50,12 +50,7 @@ public class UpdateListActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                /*
-                View view=listView.getChildAt(0);
-                EditText editText=view.findViewById(R.id.editText);
-                String string=editText.getText().toString();
-                Toast.makeText(getApplicationContext(), "text of first word: "+ string, Toast.LENGTH_LONG).show();
-                 */
+
                 words.add("");
                 trans.add("");
                 //adapter.clear();

@@ -130,25 +130,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
 
-            /*
-            DatabaseReference Ref = myFirebaseDatabase.getInstance().getReference().child("students");
-            Ref.addListenerForSingleValueEvent(new ValueEventListener() {
-               @Override
-               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               if (dataSnapshot.hasChild(currentUserUId)) {
-                   userType = "student";
-               }
-               else
-                   userType = "teacher";
-               }
-               @Override
-               public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                   }
-               }
-
-            );
-             */
         }
     }
 
@@ -206,80 +187,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
     }
-
-
-/*
-    private void ifRegistered() {
-
-        //checks if registered- in SQLite there is a registered user
-        int lastUser = mMySQLiteDatabase.getLastUserIfExist();
-        if(lastUser == -1) {//there is no user registered
-            //Toast.makeText(getApplicationContext(), "last user not found", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        else {
-            Toast.makeText(getApplicationContext(), ("last user found: " + lastUser), Toast.LENGTH_SHORT).show();
-        }
-
-        User user = mMySQLiteDatabase.getUserIfExist(lastUser);
-        if(user == null) {//there is no user registered
-            Toast.makeText(getApplicationContext(), "user not found", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "Registered: " + user, Toast.LENGTH_LONG).show();
-            //if registered- go to main activity, with the current user id
-            Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-            mainIntent.putExtra("id", user.getId());
-            startActivity(mainIntent);
-        }
-
-    }
-
-    private void register(String email, String password, String userType)
-    {
-        //checks if the email+password is registered in firebase authentication
-        //if does, load the data and insert the user with sqlite
-        //if not, create new user in auth, new database for this user, and insert to sqlite
-        Boolean insertUser = mMySQLiteDatabase.addUser(email, password, userType);
-        if (insertUser) {
-
-            loadingBar.setTitle("Creating Bew Account");
-            loadingBar.setMessage("Please wait, while we are creating new account for you...");
-            loadingBar.setCanceledOnTouchOutside(true);
-            loadingBar.show();
-
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Toast.makeText(getApplicationContext(),"succeeded createing User With Email" , Toast.LENGTH_LONG).show();
-                                loadingBar.dismiss();
-                                //FirebaseUser user = mAuth.getCurrentUser();
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                String message = task.getException().toString();
-                                Toast.makeText(getApplicationContext(),message , Toast.LENGTH_LONG).show();
-                                loadingBar.dismiss();
-                            }
-                        }
-                    });
-
-
-            Toast.makeText(getApplicationContext(), "Registered successfully", Toast.LENGTH_LONG).show();
-            Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-            int id = mMySQLiteDatabase.getIdOfUser(email);
-            mainIntent.putExtra("id", id);
-            startActivity(mainIntent);
-        }
-        Boolean insertUserId = mMySQLiteDatabase.setLastUserId(email);
-        if (insertUserId) {
-            Toast.makeText(getApplicationContext(), "enter id successfully", Toast.LENGTH_LONG).show();
-        }
-    }
-*/
 
 
     public void radioButtonClick(View v)
