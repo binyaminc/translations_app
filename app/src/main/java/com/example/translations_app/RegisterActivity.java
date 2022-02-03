@@ -109,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void ifRegistered() {
-        if(currentUser == null)
+        if(!DatabaseFactory.getDatabase().databaseWasAuthed())//(currentUser == null)
             return;
         else {
             final String currentUserUId = currentUser.getUid();
@@ -182,6 +182,10 @@ public class RegisterActivity extends AppCompatActivity {
                             loadingBar.dismiss();
                             currentUser = mAuth.getCurrentUser();
                             createNewUserDatabase(userType);
+
+                            //updates the database that the user was authenticated
+                            DatabaseFactory.getDatabase().authenticate();
+
                             sendUserToMainActivity(userType);
                         } else {
                             String message = task.getException().toString();

@@ -25,12 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    /*
-    mySQLiteDatabase mMySQLiteDatabase;
 
-    private RadioGroup radioGroup;
-    private RadioButton radioButton;
-*/
     FirebaseDatabase database;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -70,20 +65,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-
-        /*
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        loadingBar = new ProgressDialog(this);
-
-        mMySQLiteDatabase = new mySQLiteDatabase(this);
-        radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-
-        ifRegistered();
-
-
-
-         */
     }
 
     private void initializeFields() {
@@ -113,6 +94,10 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             //Toast.makeText(getApplicationContext(),"succeeded login" , Toast.LENGTH_SHORT).show();
+
+                            //updates the database that the user was authenticated
+                            //DatabaseFactory.getDatabase().authenticate();
+
                             loadingBar.dismiss();
                             currentUser = mAuth.getCurrentUser();
                             succeededLogin = true;
@@ -135,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
                                 }
                             });
+
                         }
                         else {
                             String message = task.getException().toString();
@@ -162,34 +148,34 @@ public class LoginActivity extends AppCompatActivity {
             }
 
          */
-            /*
-            final String currentUserUId = currentUser.getUid();
-            DatabaseReference Ref = myFirebaseDatabase.getInstance().getReference().child("students");
-            Ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                   @Override
-                                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                       if (dataSnapshot.hasChild(currentUserUId)) {
-                                                           userType = "student";
-                                                       } else
-                                                           userType = "teacher";
-                                                   }
-
-                                                   @Override
-                                                   public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                   }
+        /*
+        final String currentUserUId = currentUser.getUid();
+        DatabaseReference Ref = myFirebaseDatabase.getInstance().getReference().child("students");
+        Ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                               @Override
+                                               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                   if (dataSnapshot.hasChild(currentUserUId)) {
+                                                       userType = "student";
+                                                   } else
+                                                       userType = "teacher";
                                                }
 
-            );
+                                               @Override
+                                               public void onCancelled(@NonNull DatabaseError databaseError) {
 
-             */
-            /*
-            if(!userType.equals("notFound"))
-                sendUserToMainActivity(userType);
-            else
-                Toast.makeText(getApplicationContext(), "user not found", Toast.LENGTH_LONG).show();
+                                               }
+                                           }
 
-             */
+        );
+
+         */
+        /*
+        if(!userType.equals("notFound"))
+            sendUserToMainActivity(userType);
+        else
+            Toast.makeText(getApplicationContext(), "user not found", Toast.LENGTH_LONG).show();
+
+         */
 
 
         /*

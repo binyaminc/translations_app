@@ -24,6 +24,8 @@ public class myFirebaseDatabase implements IDatabase{
     private FirebaseUser currentUser;
     public static String databaseURL = "https://translationsapp-b5184.firebaseio.com/";
 
+    private Boolean databaseWasAuthed = false;
+
     private String generalType;
 
     private String listLink;
@@ -39,10 +41,26 @@ public class myFirebaseDatabase implements IDatabase{
     private myFirebaseDatabase(){
 
         database = FirebaseDatabase.getInstance(databaseURL);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null)//(databaseWasAuthed)
+            initializeDatabase();
+    }
+    public void authenticate() {
+        databaseWasAuthed = true;
+        initializeDatabase();
+    }
+    public void signOut() {
+        mAuth.signOut();
+    }
+
+    public void initializeDatabase() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         arrayListName_Owner = new ArrayList<>();
+
+        arrayListOfListNames.clear();
+        arrayListOfKeys.clear();
+        arrayListOfLists.clear();
 
         //check if the user is a teacher or a student
         final String currentUserUId = currentUser.getUid();
@@ -55,7 +73,7 @@ public class myFirebaseDatabase implements IDatabase{
                 else
                     generalType = "students";
 
-                //after I know the user type, I can have a reference to it
+                //after I know the user type, I can have a reference to the user
                 userRef = database.getReference().child(generalType).child(currentUser.getUid());
                 myListsRef = userRef.child("myLists").getRef();
 
@@ -91,13 +109,12 @@ public class myFirebaseDatabase implements IDatabase{
 
     }
 
-    void getListDetails(String listUID, int index) {
+    private void getListDetails(String listUID, int index) {
         /*
         1. get name_owner and save in separate list (helps to writing)
         2. fill in myList.isOwner
         3. get values
-         */
-
+        */
 
         DatabaseReference listRef = database.getReference().child("lists").child(listUID).getRef();
 
@@ -131,6 +148,15 @@ public class myFirebaseDatabase implements IDatabase{
             }
         });
 
+    }
+
+    public boolean databaseNeedsUserAuth() {
+        return true;
+    }
+
+    // files that declares whether the user was authenticated
+    public boolean databaseWasAuthed() {
+        return databaseWasAuthed;
     }
 
     @Override
