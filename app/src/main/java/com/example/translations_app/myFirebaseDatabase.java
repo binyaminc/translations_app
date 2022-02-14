@@ -2,6 +2,9 @@ package com.example.translations_app;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +29,7 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
     private boolean wasDatabaseAuthed = false;
 
     private String generalType;
+    private String userType;
 
     private String listLink;
     private myList list;
@@ -138,6 +142,7 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
 
     }
 
+    //-----------------Authentication-----------------
     @Override
     public boolean databaseNeedsUserAuth() {
         return true;
@@ -152,6 +157,49 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
         readUserData();
     }
     @Override
+    public void login(String email, String password, LoginActivity activity){
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()) {
+
+                            currentUser = mAuth.getCurrentUser();
+
+                            //checks whether student or teacher
+                            final String currentUserUId = currentUser.getUid();
+                            DatabaseReference teacherRef = database.getReference().child("teachers").child(currentUserUId).getRef();
+
+                            teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if (snapshot.exists())
+                                        userType = "teacher";
+                                    else
+                                        userType = "student";
+
+                                    authenticated();
+
+                                    activity.afterSuccessfulLogin(userType);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+                        }
+                        else {
+                            String message = task.getException().toString();
+                            activity.afterFailedLogin(message);
+                        }
+                    }
+                });
+    }
+    @Override
+    public void register(String email, String password, RegisterActivity activity){}
+    @Override
     public void logOut() {
         mAuth.signOut();
         wasDatabaseAuthed = false;
@@ -161,7 +209,7 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
         arrayListOfLists.clear();
         arrayListName_Owner.clear();
     }
-
+    //-----------------Authentication until here-----------------
     @Override
     public void addList(String listName, ArrayList<Pair> values) {
 

@@ -6,5 +6,7 @@ public interface IDatabaseWithAuth extends IDatabase {
 
     void authenticated(); //read the data of the user, assuming that the user was authenticated
 
+    void login(String email, String password, LoginActivity activity);
+    void register(String email, String password, RegisterActivity activity);
     void logOut();
 }
