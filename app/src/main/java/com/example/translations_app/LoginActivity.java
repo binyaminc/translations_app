@@ -106,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                                     else
                                         userType = "student";
 
+                                    ((IDatabaseWithAuth) DatabaseFactory.getDatabase()).authenticated();
                                     sendUserToMainActivity(userType);
                                 }
 

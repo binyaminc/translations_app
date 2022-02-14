@@ -45,8 +45,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = DatabaseFactory.getDatabase();
         //check validation
-        if((FirebaseAuth.getInstance().getCurrentUser() == null))
+        if(db.databaseNeedsUserAuth() && !((IDatabaseWithAuth)db).databaseWasAuthed())//(FirebaseAuth.getInstance().getCurrentUser() == null)
         {
             sendUserToRegisterActivity();
             finish();
@@ -249,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.logOut:
                 mAuth.signOut();
+                ((IDatabaseWithAuth)db).logOut();
                 sendUserToRegisterActivity();
         }
         return false;

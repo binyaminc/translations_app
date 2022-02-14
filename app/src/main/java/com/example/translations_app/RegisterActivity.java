@@ -109,7 +109,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void ifRegistered() {
-        if(currentUser == null)
+        IDatabase db = DatabaseFactory.getDatabase();
+        if(db.databaseNeedsUserAuth() && !((IDatabaseWithAuth)db).databaseWasAuthed())//(currentUser == null)
             return;
         else {
             final String currentUserUId = currentUser.getUid();
@@ -163,6 +164,7 @@ public class RegisterActivity extends AppCompatActivity {
                             loadingBar.dismiss();
                             currentUser = mAuth.getCurrentUser();
                             createNewUserDatabase(userType);
+
                             sendUserToMainActivity(userType);
                         } else {
                             String message = task.getException().toString();
@@ -176,16 +178,16 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void createNewUserDatabase(String userType) {
         String uniqueID = currentUser.getUid();
-        if(userType.equals("student")) {
+        /*if(userType.equals("student")) {
             userRef = database.getReference().child("students").child(uniqueID).getRef();
             userRef.child("myLists").setValue("myLists");
         }
         else {
             userRef = database.getReference().child("teachers").child(uniqueID).getRef();
             userRef.child("myLists").setValue("myLists");
-
-        }
-
+        }*/
+        userRef = database.getReference().child(userType + "s").child(uniqueID).getRef();
+        userRef.child("myLists").setValue("myLists");
     }
 
 

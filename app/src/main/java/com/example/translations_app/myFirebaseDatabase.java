@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
-public class myFirebaseDatabase implements IDatabase{
+public class myFirebaseDatabase implements IDatabaseWithAuth{
     private static myFirebaseDatabase ourInstance = null;
 
     private FirebaseDatabase database;
@@ -23,6 +23,7 @@ public class myFirebaseDatabase implements IDatabase{
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     public static String databaseURL = "https://translationsapp-b5184.firebaseio.com/";
+    private boolean wasDatabaseAuthed = false;
 
     private String generalType;
 
@@ -39,10 +40,16 @@ public class myFirebaseDatabase implements IDatabase{
     private myFirebaseDatabase(){
 
         database = FirebaseDatabase.getInstance(databaseURL);
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
 
         arrayListName_Owner = new ArrayList<>();
+
+        if (wasDatabaseAuthed)
+            readUserData();
+    }
+
+    private void readUserData() {
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
         //check if the user is a teacher or a student
         final String currentUserUId = currentUser.getUid();
@@ -87,8 +94,6 @@ public class myFirebaseDatabase implements IDatabase{
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-
-
     }
 
     void getListDetails(String listUID, int index) {
@@ -131,6 +136,30 @@ public class myFirebaseDatabase implements IDatabase{
             }
         });
 
+    }
+
+    @Override
+    public boolean databaseNeedsUserAuth() {
+        return true;
+    }
+    @Override
+    public boolean databaseWasAuthed(){
+        return wasDatabaseAuthed;
+    }
+    @Override
+    public void authenticated() {
+        wasDatabaseAuthed = true;
+        readUserData();
+    }
+    @Override
+    public void logOut() {
+        mAuth.signOut();
+        wasDatabaseAuthed = false;
+
+        arrayListOfListNames.clear();
+        arrayListOfKeys.clear();
+        arrayListOfLists.clear();
+        arrayListName_Owner.clear();
     }
 
     @Override
