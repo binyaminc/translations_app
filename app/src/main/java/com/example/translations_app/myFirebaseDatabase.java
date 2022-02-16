@@ -61,10 +61,13 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
         teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists())
+                if (snapshot.exists()) {
                     generalType = "teachers";
-                else
+                    userType = "teacher";
+                }else {
                     generalType = "students";
+                    userType = "student";
+                }
 
                 //after I know the user type, I can have a reference to it
                 userRef = database.getReference().child(generalType).child(currentUser.getUid());
@@ -198,7 +201,31 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
                 });
     }
     @Override
-    public void register(String email, String password, RegisterActivity activity){}
+    public void register(String email, String password, String aUserType, RegisterActivity activity){
+
+        userType = aUserType;
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // create user database in firebase
+                            currentUser = mAuth.getCurrentUser();
+                            String uniqueID = currentUser.getUid();
+                            userRef = database.getReference().child(aUserType + "s").child(uniqueID).getRef();
+                            userRef.child("myLists").setValue("myLists");
+
+                            authenticated();
+
+                            activity.afterSuccessfulRegistration();
+                        } else {
+                            String message = task.getException().toString();
+                            activity.afterFailedRegistration(message);
+                        }
+                    }
+                });
+    }
     @Override
     public void logOut() {
         mAuth.signOut();
@@ -294,8 +321,8 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
     }
 
     @Override
-    public ArrayList<String> getNamesOfLists() {
-        return arrayListOfListNames;
+    public String getUserType() {
+        return userType;
     }
 
     @Override

@@ -16,7 +16,7 @@ public interface IDatabase {
     void deleteList (int index);
     void updateList (int index, ArrayList<Pair> newValues);
 
-    ArrayList<String> getNamesOfLists ();
+    String getUserType();
 
     Object getListRepresentation (int index); //returns UID or file with the pairsList
 
