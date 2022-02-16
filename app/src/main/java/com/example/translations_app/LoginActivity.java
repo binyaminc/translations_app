@@ -13,15 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    //FirebaseDatabase database;
-    //private FirebaseAuth mAuth;
-    //private FirebaseUser currentUser;
     public ProgressDialog loadingBar;
 
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
-
-    //private String userType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,16 +53,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initializeFields() {
-        //database = FirebaseDatabase.getInstance();
-        //mAuth = FirebaseAuth.getInstance();
-        //currentUser = mAuth.getCurrentUser();
         loadingBar = new ProgressDialog(this);
 
         emailEditText = (EditText) findViewById(R.id.gmailEditText);
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);
         loginButton = (Button) findViewById(R.id.loginButton);
-
-        //userType = "notFound";
     }
 
     public void afterSuccessfulLogin(String userType) { //this function is called from IDatabaseWithAuth.login

@@ -15,18 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    //mySQLiteDatabase mMySQLiteDatabase;
-
     private TextView alreadyHaveAnAccount;
     private EditText emailEditText, passwordEditText;
     private Button registerButton;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
-
-    //private FirebaseDatabase database;
-    //private DatabaseReference userRef;
-    //private FirebaseAuth mAuth;
-    //private FirebaseUser currentUser;
 
     private ProgressDialog loadingBar;
 
@@ -72,8 +65,6 @@ public class RegisterActivity extends AppCompatActivity {
                 else
                     userType = radioButton.getText().toString();
 
-                //register(email, password);
-
                 loadingBar.setTitle("Creating New Account");
                 loadingBar.setMessage("Please wait, while we are creating new account for you...");
                 loadingBar.setCanceledOnTouchOutside(true);
@@ -88,13 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void initializeFields() {
 
-        //database = FirebaseDatabase.getInstance();
-        //mAuth = FirebaseAuth.getInstance();
-        //currentUser = mAuth.getCurrentUser();
-
         loadingBar = new ProgressDialog(this);
-
-        //mMySQLiteDatabase = new mySQLiteDatabase(this);
 
         alreadyHaveAnAccount = (TextView) findViewById(R.id.alreadyHaveAnAccount);
         emailEditText = (EditText) findViewById(R.id.registerEmailEditText);
@@ -110,25 +95,6 @@ public class RegisterActivity extends AppCompatActivity {
         else {
             userType = db.getUserType();
             sendUserToMainActivity();
-            /*
-            final String currentUserUId = currentUser.getUid();
-            DatabaseReference teacherRef = database.getReference().child("teachers").child(currentUserUId).getRef();
-            teacherRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.exists())
-                        userType = "teacher";
-                    else
-                        userType = "student";
-
-                    sendUserToMainActivity();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-            */
         }
     }
 
@@ -143,37 +109,6 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(mainIntent);
     }
 
-/*
-    private void register(String email, String password)
-    {
-
-        loadingBar.setTitle("Creating New Account");
-        loadingBar.setMessage("Please wait, while we are creating new account for you...");
-        loadingBar.setCanceledOnTouchOutside(true);
-        loadingBar.show();
-
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            //Toast.makeText(getApplicationContext(),"succeeded creating User With Email" , Toast.LENGTH_LONG).show();
-                            loadingBar.dismiss();
-                            currentUser = mAuth.getCurrentUser();
-                            createNewUserDatabase(userType);
-
-                            sendUserToMainActivity();
-                        } else {
-                            String message = task.getException().toString();
-                            Toast.makeText(getApplicationContext(),message , Toast.LENGTH_LONG).show();
-                            loadingBar.dismiss();
-                        }
-                    }
-                });
-
-    }
-    */
     public void afterSuccessfulRegistration() {
         loadingBar.dismiss();
         sendUserToMainActivity();
@@ -183,22 +118,6 @@ public class RegisterActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),errorMessage , Toast.LENGTH_LONG).show();
         loadingBar.dismiss();
     }
-    /*
-    private void createNewUserDatabase(String userType) {
-        String uniqueID = currentUser.getUid();
-        /*if(userType.equals("student")) {
-            userRef = database.getReference().child("students").child(uniqueID).getRef();
-            userRef.child("myLists").setValue("myLists");
-        }
-        else {
-            userRef = database.getReference().child("teachers").child(uniqueID).getRef();
-            userRef.child("myLists").setValue("myLists");
-        }*/
-        /*
-        userRef = database.getReference().child(userType + "s").child(uniqueID).getRef();
-        userRef.child("myLists").setValue("myLists");
-    }
-    */
 
     public void radioButtonClick(View v)
     {
