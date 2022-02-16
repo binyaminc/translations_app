@@ -19,15 +19,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private IDatabase db;
-    private FirebaseAuth mAuth;
 
     private String userType;
 
@@ -135,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         userType = (String) getIntent().getExtras().get("userType");
         String generalType = (userType.equals("teacher") ? "teachers" : "students");
 
-        mAuth = FirebaseAuth.getInstance();
     }
 
     private void shareList(int index) {
@@ -249,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.logOut:
-                mAuth.signOut();
                 ((IDatabaseWithAuth)db).logOut();
                 sendUserToRegisterActivity();
         }

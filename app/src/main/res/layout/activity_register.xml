@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="4dp"
-        android:hint="Email password"
+        android:hint="Password"
         android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
         tools:layout_editor_absoluteX="68dp" />
@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
-        android:text="Email password:"
+        android:text="Password:"
         android:textColor="@color/colorAccent"
         app:layout_constraintTop_toBottomOf="@+id/registerEmailEditText"
         tools:layout_editor_absoluteX="68dp" />

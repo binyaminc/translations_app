@@ -42,7 +42,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email password:"
+        android:text="Password:"
         android:layout_marginHorizontal="30dp"
         android:textColor="@color/colorAccent"
         />
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:layout_marginBottom="70dp"
-        android:hint="Email password"
+        android:hint="Password"
         android:inputType="textPassword" />
 
     <Button
