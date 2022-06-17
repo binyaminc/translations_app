@@ -240,12 +240,12 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
     @Override
     public void addList(String listName, ArrayList<Pair> values) {
 
-        //adding to local database
+        //adding to the local database
         arrayListOfListNames.add(listName);
         for(Runnable r : listNamesListeners) {r.run();}
         String listUID = myListsRef.push().getKey(); //generate UID for the list
         arrayListOfKeys.add(listUID);
-        arrayListOfLists.add(new myList(listName, listUID, true));
+        arrayListOfLists.add(new myList(listName, listUID, true, values));
         String name_owner = listName + "__" + currentUser.getEmail().replace('@', '_').replace('.','_');
         arrayListName_Owner.add(name_owner);//saves place for later updating in getListDetails function
 
@@ -259,15 +259,13 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
 
     @Override
     public void deleteList(int index) {
-        arrayListOfListNames.remove(index);
-        for(Runnable r : listNamesListeners) {r.run();}
 
-        //remove from the private database
+        //remove from the firebase private database
         String listUId = arrayListOfKeys.get(index);
         DatabaseReference myListRef = myListsRef.child(listUId).getRef();
         myListRef.removeValue();
 
-        //makes sure there the user will remain after the delete. makes sure there is value in the myListRef
+        //makes sure that the user will remain after the delete. makes sure there is value in the myListRef
         myListsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -281,9 +279,8 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
             }
         });
 
-
-        //remove from the public database, if one is the owner of the pairsList
-        final DatabaseReference listRef = database.getReference().child("arrayListOfLists").child(listUId).getRef();
+        //remove from the public firebase database, if one is the owner of the pairsList
+        final DatabaseReference listRef = database.getReference().child("lists").child(listUId).getRef();
         listRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -302,8 +299,15 @@ public class myFirebaseDatabase implements IDatabaseWithAuth{
 
             }
         });
+        //remove from the local database
+        arrayListOfListNames.remove(index);
+        for(Runnable r : listNamesListeners) {r.run();}
 
         arrayListOfKeys.remove(index);
+        //I added now (17/6/2022). How did I miss it until now?!
+        arrayListOfLists.remove(index);
+        arrayListName_Owner.remove(index);
+
     }
 
     @Override

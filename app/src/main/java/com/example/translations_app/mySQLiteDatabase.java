@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class mySQLiteDatabase extends SQLiteOpenHelper {
 
-    private static final String TAG = "DatabalseHelper";
-    private static final String COL1 = "gmail";
+    private static final String TAG = "DatabaseHelper";
+    private static final String COL1 = "email";
     private static final String COL2 = "password";
 
     public mySQLiteDatabase(Context context) {

@@ -27,4 +27,10 @@ public class myList implements Serializable {
         this.isOwner = isOwner;
         values = new ArrayList<>();
     }
+    public myList(String name, String UID, Boolean isOwner, ArrayList<Pair> values) {
+        this.name = name;
+        this.UID = UID;
+        this.isOwner = isOwner;
+        this.values = values;
+    }
 }

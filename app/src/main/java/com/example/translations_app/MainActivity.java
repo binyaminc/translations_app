@@ -44,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
 
         db = DatabaseFactory.getDatabase();
         //check validation
-        if(db.databaseNeedsUserAuth() && !((IDatabaseWithAuth)db).databaseWasAuthed())//(FirebaseAuth.getInstance().getCurrentUser() == null)
+        if(db.databaseNeedsUserAuth() && !((IDatabaseWithAuth)db).databaseWasAuthed())
         {
             sendUserToRegisterActivity();
             finish();
             return;
         }
         
-        //TODO: that might be the cause to the fact that it goes to the register activity when is start-
+        //TODO: that might be the cause to the fact that it goes to the register activity when it starts-
         // because he needs to have an Extra from an intent.
         // the question is how to make it check its userType alone
         if(!getIntent().hasExtra("userType"))
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         sendUserToPracticeActivity(listIndex);
                         break;
                     case "delete_list":
-                        //ask the user if he sure he wants to delete the pairsList, and if do - delete
+                        //ask the user if he is sure he wants to delete the list, and if do - delete
                         doesWantToDelete();
                         break;
                     case "update_list":
@@ -93,14 +93,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-
-
     //TODO: enter -> enterValue
-    //TODO: use hebrew
-    //TODO: create an opportunity to translate words using google translate or morfix
+    //TODO: create an option to translate words using google translate or morfix
     //TODO: in a translation, maybe to suggest him the automatic translation of G"T or morfix
-    //TODO: pairsList of lists to learn, he chooses one and presses on a button- either delete, or practice or update(add or delete one pair)
     }
 
     private void initializeFields() {
